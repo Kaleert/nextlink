@@ -1,0 +1,95 @@
+# Flutter / Dart generated files. Keep pubspec.lock for reproducible app builds.
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Android / Kotlin local caches and build outputs.
+/android/.gradle/
+/android/.kotlin/
+/android/captures/
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+.cxx/
+*.apk
+*.aab
+*.apks
+
+# Generated native artifacts. Android's actual AAR dependency stays in Git.
+/t2swrapper/*.aar
+/t2swrapper/*-sources.jar
+/android/app/libs/*-sources.jar
+/dist/
+/linux/core/
+
+# Separate, unused upstream checkout; tun2socks is a registered submodule.
+/sing-box/
+
+# IDE / editor state. Project .vscode settings may be shared.
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+.atom/
+.history/
+
+# Local credentials. Templates may be shared.
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+/android/key.properties
+/android/local.properties
+
+# Temporary files, logs and symbolication output.
+*.class
+*.pyc
+__pycache__/
+*.log
+.DS_Store
+.build/
+.buildlog/
+.svn/
+.swiftpm/
+migrate_working_dir/
+app.*.symbols
+app.*.map.json
+
+# Local notes, exports and old diagnostic artifacts.
+/.artifacts/
+/NextLink_Logs.txt
+/important_comments.txt
+/meww-source.txt
+/config_xray.json
+/code_analiz
+/analyzer.yml
+
+# Generated shadow release payloads
+/android/app/src/shadow/assets/preload/
+/release*/
+/screenshots/
+
+# Android shadow ELF binaries are staged by the release script.
+/android/app/src/shadow/jniLibs/
+# Release signing material (NEVER commit real credentials).
+/android/upload-keystore.jks
+/android/*.jks
+/android/key.properties
+
+# Local patch backups
+*.before-*
+
+# Android root Gradle outputs
+/android/build/
+
+*.json.bak
+
+.nextlink-patch-backups/

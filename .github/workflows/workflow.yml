@@ -1,0 +1,173 @@
+name: Android CI and release
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      build_shadow:
+        description: 'Build Shadow too (downloads pinned cores from nextlink-cores)'
+        type: boolean
+        default: true
+      publish_release:
+        description: 'Publish a GitHub Release for the current version (requires tag checkout)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nextlink-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  checks:
+    name: Dart, Python and Android debug
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Flutter dependencies
+        run: flutter pub get
+      - name: Dart analysis (errors only)
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Offline Dart tests
+        run: |
+          flutter test test/core/models test/core/utils test/core/engine test/core/localization --exclude-tags network -r expanded
+      - name: Packaging unit tests
+        run: python3 -m unittest discover -s test/python -v
+      - name: Android debug compile (Original)
+        run: flutter build apk --debug --flavor original --target-platform android-arm64
+
+  release_build:
+    name: Signed Android ARM64 (${{ matrix.flavor }})
+    needs: checks
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [original, shadow]
+    steps:
+      - name: Skip unrequested Shadow
+        id: selection
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SHADOW_REQUESTED: ${{ inputs.build_shadow }}
+          FLAVOR: ${{ matrix.flavor }}
+        run: |
+          if [[ "$FLAVOR" == original || "$EVENT_NAME" == push || "$SHADOW_REQUESTED" == true ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.selection.outputs.enabled == 'true'
+      - uses: actions/setup-java@v4
+        if: steps.selection.outputs.enabled == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        if: steps.selection.outputs.enabled == 'true'
+        with:
+          channel: stable
+          cache: true
+      - name: Check release version/tag
+        if: steps.selection.outputs.enabled == 'true'
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          VERSION="$(sed -nE 's/^version:[[:space:]]*([^[:space:]]+).*/\1/p' pubspec.yaml | head -1)"
+          test -n "$VERSION"
+          if [[ "$REF_TYPE" == tag ]]; then
+            test "$REF_NAME" == "v$VERSION" || { echo "Tag $REF_NAME != pubspec v$VERSION" >&2; exit 1; }
+          fi
+      - name: Download Shadow cores (verified manifests)
+        if: steps.selection.outputs.enabled == 'true' && matrix.flavor == 'shadow'
+        env:
+          NEXTLINK_CORES_TAG: cores-v1
+          NEXTLINK_XRAY_VERSION: v26.10.31
+          # Optional: set repo variable NEXTLINK_XRAY_SHA256 to pin ZIP contents too.
+          NEXTLINK_XRAY_SHA256: ${{ vars.NEXTLINK_XRAY_SHA256 }}
+        run: python3 scripts/fetch_shadow_cores.py
+      - name: Create release signing properties
+        if: steps.selection.outputs.enabled == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          for key in KEYSTORE_BASE64 STORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            test -n "${!key}" || { echo "Missing signing secret: $key" >&2; exit 1; }
+          done
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          chmod 600 android/upload-keystore.jks
+          {
+            printf 'storeFile=upload-keystore.jks\n'
+            printf 'storePassword=%s\n' "$STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+          } > android/key.properties
+          chmod 600 android/key.properties
+      - name: Build signed APK
+        if: steps.selection.outputs.enabled == 'true'
+        run: bash scripts/build_releases.sh android arm64-v8a '${{ matrix.flavor }}'
+      - name: Upload signed APK and checksum
+        if: steps.selection.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-arm64-${{ matrix.flavor }}
+          path: |
+            releases/**/*.apk
+            releases/**/*.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish Android GitHub Release
+    needs: release_build
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.publish_release)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Verify publishing from a version tag
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          test "$REF_TYPE" = tag || { echo 'Publishing requires checking out a vVERSION tag' >&2; exit 1; }
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: android-arm64-*
+          merge-multiple: true
+          path: release-files
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-files/**/*.apk
+            release-files/**/*.sha256
+          fail_on_unmatched_files: true
+          prerelease: true
+          generate_release_notes: true

@@ -1,0 +1,13 @@
+name: Feature request
+description: Suggest a NextLink improvement
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Что предлагаешь?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Какую проблему это решает?

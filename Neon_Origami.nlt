@@ -1,0 +1,42 @@
+{
+  "name": "Neon Origami",
+  "author": "Kaleert",
+  "description": "Неоновое оригами: ледяной фон, ультрафиолет и лайм, острые карточки и плавное движение.",
+  "background": "#080D17",
+  "surface": "#182038",
+  "primary": "#D5FF70",
+  "primaryDark": "#9D7AFF",
+  "text": "#F1F6FF",
+  "textDim": "#9AAAC8",
+  "meshIdle1": "#241342",
+  "meshIdle2": "#063A45",
+  "meshActive1": "#492263",
+  "meshActive2": "#154F43",
+  "cardRadius": 10,
+  "glassOpacity": 0.38,
+  "blurSigma": 30,
+  "backgroundIntensity": 0.9,
+  "animationDurationMs": 12000,
+  "pressDurationMs": 220,
+  "fontFamily": "Nunito",
+  "useGradients": true,
+  "animationsEnabled": true,
+  "gradientTitle": true,
+  "componentAnimations": {
+    "home_power_button": "soft",
+    "home_settings_button": "bounce"
+  },
+  "componentMotions": {
+    "home_app_title": "float"
+  },
+  "componentRadii": {
+    "home_server_card": 10,
+    "home_system_info": 10,
+    "home_timer": 8,
+    "home_power_button": 28
+  },
+  "componentColors": {
+    "home_traffic_arrow": 4285724596,
+    "home_power_button": 4283840653
+  }
+}

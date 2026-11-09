@@ -1,0 +1,6 @@
+# Copy to android/key.properties (never commit the real file).
+# Paths are relative to android/ (Gradle root project).
+storeFile=upload-keystore.jks
+storePassword=CHANGE_ME
+keyAlias=nextlink
+keyPassword=CHANGE_ME

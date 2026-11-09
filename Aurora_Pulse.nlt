@@ -1,0 +1,32 @@
+{
+  "name": "Aurora Pulse",
+  "author": "Kalert",
+  "description": "First of Basement themes",
+  "background": "#070B13",
+  "surface": "#111A27",
+  "primary": "#72F7D4",
+  "primaryDark": "#6D7CFF",
+  "text": "#F3F7FF",
+  "textDim": "#91A1B8",
+  "meshIdle1": "#102840",
+  "meshIdle2": "#24163D",
+  "meshActive1": "#075B59",
+  "meshActive2": "#35276B",
+  "useGradients": true,
+  "animationsEnabled": true,
+  "animationDurationMs": 11000,
+  "cardRadius": 26,
+  "fontFamily": "sans-serif",
+  "gradientTitle": true,
+  "componentAnimations": {
+    "home_power_button": "soft",
+    "home_ping": "soft",
+    "home_traffic": "soft",
+    "home_server_card": "soft",
+    "home_settings_button": "soft",
+    "home_apps_button": "soft",
+    "home_rules_button": "soft"
+  },
+  "hiddenElements": [],
+  "customElements": []
+}

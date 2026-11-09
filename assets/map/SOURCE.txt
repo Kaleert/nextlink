@@ -1,0 +1,9 @@
+Natural Earth, 1:110m land polygons (public domain).
+Source: https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson
+Coordinates rounded to 0.01 degrees and thinned for mobile rendering.
+Terms: https://www.naturalearthdata.com/about/terms-of-use/
+
+Country boundary lines, Natural Earth 1:110m (public domain):
+https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_boundary_lines_land.geojson
+
+land_mesh.json is a triangulated/subdivided derivative of land.json; regenerate with tool/build_globe_land_mesh.py.

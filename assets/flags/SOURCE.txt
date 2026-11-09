@@ -1,0 +1,5 @@
+flag-icons by Panayiotis Lipiridis
+https://github.com/lipis/flag-icons
+Commit: ac7e0eb3259eb62aa6100c435607e2fe03896a97
+4x3 SVG originals rasterized to 96x72 PNG with librsvg.
+License: MIT; see LICENSE.

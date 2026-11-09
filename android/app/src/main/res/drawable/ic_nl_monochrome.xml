@@ -1,0 +1,8 @@
+<!-- NL silhouette; white alpha mask for Android system tinting. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="1254" android:viewportHeight="1254">
+    <group android:pivotX="627" android:pivotY="627" android:scaleX="1" android:scaleY="1">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M272,390 C272,357 297,330 330,330 C350,330 370,340 385,360 L632,676 L632,389 C632,355 658,328 691,328 C724,328 750,354 750,389 L750,813 L951,813 C982,813 1007,838 1007,869 C1007,900 982,925 951,925 L680,925 C658,925 645,917 632,900 L386,539 L386,867 C386,900 361,925 330,925 C297,925 272,900 272,867 Z" />
+    </group>
+</vector>
