@@ -4,6 +4,10 @@ on:
   push:
     branches: [master]
     tags: ['v*']
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'screenshots/**'
   pull_request:
   workflow_dispatch:
     inputs:

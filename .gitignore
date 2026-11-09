@@ -75,7 +75,6 @@ app.*.map.json
 # Generated shadow release payloads
 /android/app/src/shadow/assets/preload/
 /release*/
-/screenshots/
 
 # Android shadow ELF binaries are staged by the release script.
 /android/app/src/shadow/jniLibs/
